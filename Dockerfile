@@ -2,7 +2,7 @@
 ARG OTEL_VERSION=latest
 
 # Use the official OpenTelemetry Collector as the base
-FROM --platform=$BUILDPLATFORM otel/opentelemetry-collector:${OTEL_VERSION} AS base
+FROM --platform=$TARGETPLATFORM otel/opentelemetry-collector:${OTEL_VERSION} AS base
 
 # Build platform arguments for multi-arch support
 ARG TARGETPLATFORM
