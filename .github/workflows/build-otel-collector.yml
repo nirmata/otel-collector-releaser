@@ -4,8 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       otel_version:
-        description: 'OpenTelemetry Collector OSS version (e.g., 0.115.0)'
+        description: 'OpenTelemetry Collector OSS version (e.g., 0.144.0)'
         required: true
+        type: string
+      go_version:
+        description: 'Go version for building (e.g., 1.24.11)'
+        required: false
+        default: '1.24.11'
         type: string
       registry:
         description: 'Container registry to push to'
@@ -21,6 +26,7 @@ on:
 env:
   REGISTRY: ${{ inputs.registry || 'ghcr.io/nirmata' }}
   IMAGE_NAME: otel-collector
+  GO_VERSION: ${{ inputs.go_version || '1.24.11' }}
 
 permissions:
   contents: read
@@ -83,6 +89,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             OTEL_VERSION=${{ env.OTEL_VERSION }}
+            GO_VERSION=${{ env.GO_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -90,6 +97,7 @@ jobs:
         run: |
           echo "## 🚀 Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "**OpenTelemetry Collector Version:** ${{ env.OTEL_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Go Version:** ${{ env.GO_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "**Nirmata Tag:** ${{ env.NIRMATA_TAG }}" >> $GITHUB_STEP_SUMMARY
           echo "**Registry:** ${{ env.REGISTRY }}" >> $GITHUB_STEP_SUMMARY
           echo "**Platforms:** linux/amd64, linux/arm64" >> $GITHUB_STEP_SUMMARY
@@ -103,4 +111,4 @@ jobs:
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           else
             echo "**Status:** 🏗️ Built only (not pushed)" >> $GITHUB_STEP_SUMMARY
-          fi 
+          fi

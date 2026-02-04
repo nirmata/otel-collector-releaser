@@ -1,0 +1,32 @@
+# OpenTelemetry Collector Builder Configuration
+# This manifest defines the components to include in the custom collector build
+
+dist:
+  name: otelcol-nirmata
+  description: Nirmata OpenTelemetry Collector
+  output_path: /build/otelcol
+  otelcol_version: "${OTEL_VERSION}"
+
+# Include the same components as the core distribution
+receivers:
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v${OTEL_VERSION}
+
+exporters:
+  - gomod: go.opentelemetry.io/collector/exporter/debugexporter v${OTEL_VERSION}
+  - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v${OTEL_VERSION}
+  - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v${OTEL_VERSION}
+
+processors:
+  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v${OTEL_VERSION}
+  - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v${OTEL_VERSION}
+
+extensions:
+  - gomod: go.opentelemetry.io/collector/extension/zpagesextension v${OTEL_VERSION}
+
+connectors:
+  - gomod: go.opentelemetry.io/collector/connector/forwardconnector v${OTEL_VERSION}
+
+# Dependency replacements to fix CVEs
+replaces:
+  # CVE-2025-68156: Update expr-lang/expr to 1.17.7
+  - github.com/expr-lang/expr v1.17.6 => github.com/expr-lang/expr v1.17.7
